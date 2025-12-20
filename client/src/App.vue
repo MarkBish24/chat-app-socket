@@ -1,7 +1,9 @@
-<script setup></script>
+<script setup>
+import LoginPage from "./components/LoginPage.vue";
+</script>
 
 <template>
-  <h1>Hello</h1>
+  <LoginPage />
 </template>
 
 <style scoped></style>
