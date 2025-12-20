@@ -1,12 +1,15 @@
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 
-
+//login info
 const username = ref("");
 const password = ref("");
 const error = ref(false);
 
 const login = async () => {
+  // check if there are valid username and passwords before searching
   if (!username.value.trim() || !password.value.trim()) {
     error.value = true;
     return;
@@ -14,7 +17,9 @@ const login = async () => {
 
   error.value = false;
 
+  // try logging in
   try {
+    // fetch request to see if the username and password exist in the DB
     const res = await fetch("http://localhost:9000/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -24,6 +29,7 @@ const login = async () => {
       }),
     });
 
+    // Get data
     const data = await res.json();
 
     if (!res.ok) {
@@ -34,10 +40,14 @@ const login = async () => {
     console.log("Logged in user:", data.user);
     alert(`Logged in as ${data.user.username}`);
 
+    //Store User ID and Username in local storage
     localStorage.setItem(
       "user",
       JSON.stringify({ id: data.user.id, username: data.user.username })
     );
+
+    //change frontend route to chat
+    router.push("/chat");
   } catch (err) {
     error.value = err.message;
   }
