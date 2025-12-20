@@ -1,11 +1,12 @@
 <script setup>
 import { ref } from "vue";
 
+
 const username = ref("");
 const password = ref("");
 const error = ref(false);
 
-const login = () => {
+const login = async () => {
   if (!username.value.trim() || !password.value.trim()) {
     error.value = true;
     return;
@@ -13,7 +14,33 @@ const login = () => {
 
   error.value = false;
 
-  alert(`Logged in as ${username.value}`);
+  try {
+    const res = await fetch("http://localhost:9000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      error.value = data.error || "Login failed";
+      return;
+    }
+
+    console.log("Logged in user:", data.user);
+    alert(`Logged in as ${data.user.username}`);
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ id: data.user.id, username: data.user.username })
+    );
+  } catch (err) {
+    error.value = err.message;
+  }
 };
 </script>
 
