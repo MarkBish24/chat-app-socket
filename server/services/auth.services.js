@@ -49,7 +49,3 @@ export async function logoutUser() {
     throw new Error(err.message);
   }
 }
-
-// export async function login(req, res) {
-//   res.json({ message: "login not implemented yet" });
-// }

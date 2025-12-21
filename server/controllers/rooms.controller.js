@@ -1,4 +1,8 @@
-import { getAllRooms, saveRoom, removeRoom } from "../services/rooms.services";
+import {
+  getAllRooms,
+  saveRoom,
+  removeRoom,
+} from "../services/rooms.services.js";
 
 export async function createRoom(req, res) {
   try {

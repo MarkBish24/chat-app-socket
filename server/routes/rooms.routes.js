@@ -3,7 +3,7 @@ import {
   createRoom,
   getRooms,
   deleteRoom,
-} from "../controllers/rooms.controller";
+} from "../controllers/rooms.controller.js";
 
 const router = express.Router();
 
