@@ -18,6 +18,38 @@ export async function loginUser({ username, password }) {
   }
 }
 
+export async function registerUser({ username, password }) {
+  try {
+    const existing = await pool.query(
+      "SELECT id FROM users WHERE username = $1",
+      [username]
+    );
+
+    if (existing.rows.length > 0) {
+      throw new Error("Username Already Exists");
+    }
+
+    const result = await pool.query(
+      `INSERT INTO users (username, password)
+      VALUES ($1, $2)
+      RETURNING id, username, created_at`,
+      [username, password]
+    );
+
+    return result.rows[0];
+  } catch (err) {
+    throw new Error(err.message);
+  }
+}
+
+export async function logoutUser() {
+  try {
+    return { message: "Logged out successfully" };
+  } catch (err) {
+    throw new Error(err.message);
+  }
+}
+
 // export async function login(req, res) {
 //   res.json({ message: "login not implemented yet" });
 // }
