@@ -24,6 +24,7 @@ export async function register(req, res) {
 
 export async function logout(req, res) {
   try {
+    const user = await logoutUser(req.body);
     res.json({ message: "logout successful" });
   } catch (err) {
     res.status(400).json({ error: err.message });

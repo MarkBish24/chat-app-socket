@@ -1,8 +1,11 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import { io } from "socket.io-client";
 const router = useRouter();
+
 const username = ref("");
+let socket;
 
 onMounted(() => {
   const storedUser = localStorage.getItem("user");
@@ -11,6 +14,18 @@ onMounted(() => {
     const user = JSON.parse(storedUser);
     username.value = user.username;
   }
+
+  socket = io("http://localhost:9000");
+
+  socket.emit("joinRoom", { username: username.value });
+
+  socket.on("message", (msg) => {
+    messages.value.push(msg);
+  });
+});
+
+onUnmounted(() => {
+  if (socket) socket.disconnect();
 });
 
 const logout = async () => {
@@ -19,6 +34,7 @@ const logout = async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });
+    console.log(res);
   } catch (error) {
     console.log("Error:", error);
   } finally {

@@ -2,7 +2,10 @@ import express from "express";
 import cors from "cors";
 import { Server as SocketIOServer } from "socket.io";
 import { connectDB } from "./db.js";
+
 import authRoutes from "./routes/auth.routes.js";
+import messageRoutes from "./routes/messages.routes.js";
+import roomRoutes from "./routes/rooms.routes.js";
 
 connectDB().then(() => {
   console.log("DB connected, starting server...");
@@ -20,8 +23,10 @@ connectDB().then(() => {
   // Attach socket.io
   const io = new SocketIOServer(server, { cors: { origin: "*" } });
 
-  // Use Auth Routes
+  // Use Auth, Messages, and Room Routes
   app.use("/api/auth", authRoutes);
+  app.use("/api/messages", messageRoutes);
+  app.use("/api/rooms", roomRoutes);
 
   // store io in express
   app.set("io", io);
