@@ -9,7 +9,7 @@ export async function createMessage(req, res) {
     const newMessage = await saveMessage({ user_id, room_id, message });
     res.status(201).json({ message: newMessage });
   } catch (err) {
-    res.status(r00).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 }
 
@@ -19,6 +19,6 @@ export async function fetchMessagesByRoom(req, res) {
     const messages = await getMessagesByRoom(room_id);
     res.status(200).json({ messages });
   } catch (err) {
-    res.status(r00).json({ error: err.message });
+    res.status(400).json({ error: err.message });
   }
 }

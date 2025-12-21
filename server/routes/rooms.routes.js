@@ -1,10 +1,16 @@
 import express from "express";
-import { createRoom, getRooms } from "../controllers/rooms.controller";
+import {
+  createRoom,
+  getRooms,
+  deleteRoom,
+} from "../controllers/rooms.controller";
 
 const router = express.Router();
 
 router.post("/", createRoom);
 
 router.get("/", getRooms);
+
+router.delete("/:room_id", deleteRoom);
 
 export default router;
