@@ -11,6 +11,8 @@ const router = useRouter();
 const username = ref("");
 
 const rooms = ref([]);
+const activeRoom = ref(null);
+
 let socket;
 
 onMounted(() => {
@@ -36,17 +38,18 @@ onMounted(() => {
   };
 
   fetchRooms();
-
-  // socket.emit("joinRoom", { username: username.value });
-
-  // socket.on("message", (msg) => {
-  //   messages.value.push(msg);
-  // });
 });
 
 onUnmounted(() => {
   if (socket) socket.disconnect();
 });
+
+const selectRoom = (room) => {
+  activeRoom.value = room;
+
+  // Join Room
+  socket.emit("joinRoom", { room_id: room.id });
+};
 
 const logout = async () => {
   try {
@@ -68,11 +71,20 @@ const logout = async () => {
 <template>
   <div class="dashboard">
     <div class="rooms-list">
-      <Room v-for="room in rooms" :key="room.id" :room="room" />
+      <Room
+        v-for="room in rooms"
+        :key="room.id"
+        :room="room"
+        :active="room.id === activeRoom?.id"
+        @select="selectRoom"
+      />
     </div>
-    <div class="header">
-      <h2>Chat Room {{ username }}</h2>
-      <button @click="logout">Logout</button>
+    <div class="header-chat-box-container">
+      <div class="header">
+        <h2>{{ activeRoom.name }}</h2>
+        <button @click="logout">Logout</button>
+      </div>
+      <ChatBox />
     </div>
   </div>
 </template>
@@ -81,8 +93,13 @@ const logout = async () => {
 .dashboard {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
+  height: 100vh;
+}
+.header-chat-box-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100vh;
 }
 .header {
   display: flex;
@@ -92,7 +109,7 @@ const logout = async () => {
   width: 100%; /* make the header take full width */
   height: 100px;
   padding: 0 20px;
-  background-color: #2c2c3a;
+  background-color: #1e1e2f;
   color: #fff;
   box-sizing: border-box;
 }
@@ -104,6 +121,7 @@ const logout = async () => {
   overflow-y: auto;
   height: 100vh;
   gap: 10px;
-  width: 140px;
+  width: 120px;
+  background-color: #1e1e2f;
 }
 </style>

@@ -1,20 +1,16 @@
 <script setup>
 import { defineProps, ref } from "vue";
 
-const isActive = ref(false);
-
 const props = defineProps({
   room: Object,
+  active: Boolean,
 });
 
-const handleClick = () => {
-  isActive.value = true;
-  console.log(props.room);
-};
+const emit = defineEmits(["select"]);
 </script>
 
 <template>
-  <div :class="['room-icon', { active: isActive }]" @click="handleClick">
+  <div :class="['room-icon', { active }]" @click="$emit('select', room)">
     {{ props.room.name }}
   </div>
 </template>
