@@ -66,18 +66,44 @@ const logout = async () => {
 </script>
 
 <template>
-  <div>
-    <h2>Chat Room {{ username }}</h2>
-    <button @click="logout">Logout</button>
-  </div>
-  <div class="rooms-list">
-    <Room v-for="room in rooms" :key="room.id" :room="room" />
+  <div class="dashboard">
+    <div class="rooms-list">
+      <Room v-for="room in rooms" :key="room.id" :room="room" />
+    </div>
+    <div class="header">
+      <h2>Chat Room {{ username }}</h2>
+      <button @click="logout">Logout</button>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.dashboard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%; /* make the header take full width */
+  height: 100px;
+  padding: 0 20px;
+  background-color: #2c2c3a;
+  color: #fff;
+  box-sizing: border-box;
+}
 .rooms-list {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  height: 100vh;
+  gap: 10px;
+  width: 140px;
 }
 </style>
