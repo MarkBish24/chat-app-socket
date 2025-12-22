@@ -14,7 +14,7 @@ import { getMessagesByRoom } from "../services/messages.services.js";
 export async function fetchMessagesByRoom(req, res) {
   try {
     const { room_id } = req.params;
-    const messages = await getMessagesByRoom(room_id);
+    const messages = await getMessagesByRoom({ room_id });
     res.status(200).json({ messages });
   } catch (err) {
     res.status(400).json({ error: err.message });

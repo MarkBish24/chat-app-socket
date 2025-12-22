@@ -84,7 +84,7 @@ const logout = async () => {
         <h2 v-else>Select a Room</h2>
         <button @click="logout">Logout</button>
       </div>
-      <ChatBox />
+      <ChatBox :room="activeRoom" />
     </div>
   </div>
 </template>
