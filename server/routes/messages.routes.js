@@ -1,12 +1,10 @@
 import express from "express";
-import {
-  fetchMessagesByRoom,
-  createMessage,
-} from "../controllers/messages.controller.js";
+import { fetchMessagesByRoom } from "../controllers/messages.controller.js";
 
 const router = express.Router();
 
-router.post("/", createMessage);
+// Old Message Path
+// router.post("/", createMessage);
 
 router.get("/:room_id", fetchMessagesByRoom);
 
