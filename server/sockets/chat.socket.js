@@ -1,7 +1,15 @@
 import { saveMessage } from "../services/messages.services.js";
 
 export function chatSocket(io, socket) {
+  let currentRoom = null;
+
   socket.on("joinRoom", ({ room_id }) => {
+    if (currentRoom) {
+      console.log(`Socket ${socket.id} left room ${currentRoom}`);
+      socket.leave(`room:${currentRoom}`);
+    }
+
+    currentRoom = room_id;
     socket.join(`room:${room_id}`);
     console.log(`Socket ${socket.id} joined room ${room_id}`);
   });

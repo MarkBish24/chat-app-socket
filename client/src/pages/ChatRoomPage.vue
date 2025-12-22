@@ -12,7 +12,6 @@ const username = ref("");
 
 const rooms = ref([]);
 const activeRoom = ref(null);
-
 let socket;
 
 onMounted(() => {
@@ -81,7 +80,8 @@ const logout = async () => {
     </div>
     <div class="header-chat-box-container">
       <div class="header">
-        <h2>{{ activeRoom.name }}</h2>
+        <h2 v-if="activeRoom">{{ activeRoom.name }}</h2>
+        <h2 v-else>Select a Room</h2>
         <button @click="logout">Logout</button>
       </div>
       <ChatBox />
