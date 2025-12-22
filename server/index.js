@@ -7,6 +7,8 @@ import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/messages.routes.js";
 import roomRoutes from "./routes/rooms.routes.js";
 
+import { chatSocket } from "./sockets/chat.socket.js";
+
 connectDB().then(() => {
   console.log("DB connected, starting server...");
 
@@ -34,6 +36,8 @@ connectDB().then(() => {
   // set up connection
   io.on("connection", (socket) => {
     console.log("client connected: ", socket.id);
+
+    chatSocket(io, socket);
 
     socket.on("disconnect", () => {
       console.log("client disconnected:", socket.id);

@@ -2,9 +2,15 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { io } from "socket.io-client";
+
+import ChatBox from "../components/ChatBox.vue";
+import Room from "../components/ROom.vue";
+
 const router = useRouter();
 
 const username = ref("");
+
+const rooms = ref([]);
 let socket;
 
 onMounted(() => {
@@ -17,11 +23,25 @@ onMounted(() => {
 
   socket = io("http://localhost:9000");
 
-  socket.emit("joinRoom", { username: username.value });
+  // Getting all the rooms from the backend
 
-  socket.on("message", (msg) => {
-    messages.value.push(msg);
-  });
+  const fetchRooms = async () => {
+    try {
+      const res = await fetch("http://localhost:9000/api/rooms");
+      const data = await res.json();
+      rooms.value = data.rooms;
+    } catch (err) {
+      console.error("Failed to fetch rooms:", err);
+    }
+  };
+
+  fetchRooms();
+
+  // socket.emit("joinRoom", { username: username.value });
+
+  // socket.on("message", (msg) => {
+  //   messages.value.push(msg);
+  // });
 });
 
 onUnmounted(() => {
@@ -50,6 +70,14 @@ const logout = async () => {
     <h2>Chat Room {{ username }}</h2>
     <button @click="logout">Logout</button>
   </div>
+  <div class="rooms-list">
+    <Room v-for="room in rooms" :key="room.id" :room="room" />
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.rooms-list {
+  display: flex;
+  flex-direction: column;
+}
+</style>

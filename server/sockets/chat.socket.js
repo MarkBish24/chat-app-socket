@@ -1,4 +1,4 @@
-import { saveMessage } from "../services/messages.services";
+import { saveMessage } from "../services/messages.services.js";
 
 export function chatSocket(io, socket) {
   socket.on("joinRoom", ({ room_id }) => {
