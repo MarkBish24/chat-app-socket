@@ -1,5 +1,7 @@
 <script setup>
 import { defineProps, ref, watch, onMounted } from "vue";
+import MessageInput from "./MessageInput.vue";
+
 const props = defineProps({
   room: Object,
 });
@@ -8,7 +10,7 @@ const messages = ref([]);
 const storedUser = ref(null);
 
 onMounted(() => {
-  storedUser.value = JSON.parse(localStorage.getItem("user"));
+  storedUser.value = JSON.parse(sessionStorage.getItem("user"));
   console.log(storedUser.value);
 });
 
@@ -46,7 +48,9 @@ function formatTime(timestamp) {
       :key="msg.id"
       :class="{ self: msg.username === storedUser.username }"
     >
-      <div class="sender">{{ msg.username }}</div>
+      <div class="sender" v-if="msg.username !== storedUser?.username">
+        {{ msg.username }}
+      </div>
 
       <div class="message-container">
         <div class="message-box">
@@ -55,6 +59,7 @@ function formatTime(timestamp) {
         <span class="time">{{ formatTime(msg.created_at) }}</span>
       </div>
     </div>
+    <MessageInput />
   </div>
 </template>
 
@@ -72,7 +77,7 @@ function formatTime(timestamp) {
 .message-wrapper {
   margin: 2px 10px;
   align-self: flex-start;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.7);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -81,6 +86,10 @@ function formatTime(timestamp) {
 .message-wrapper.self {
   align-self: flex-end;
   align-items: flex-end;
+}
+
+.sender {
+  margin: 2px 10px;
 }
 
 .message-container {

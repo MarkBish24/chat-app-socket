@@ -41,7 +41,7 @@ const login = async () => {
     alert(`Logged in as ${data.user.username}`);
 
     //Store User ID and Username in local storage
-    localStorage.setItem(
+    sessionStorage.setItem(
       "user",
       JSON.stringify({ id: data.user.id, username: data.user.username })
     );

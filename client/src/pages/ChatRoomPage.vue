@@ -15,7 +15,7 @@ const activeRoom = ref(null);
 let socket;
 
 onMounted(() => {
-  const storedUser = localStorage.getItem("user");
+  const storedUser = sessionStorage.getItem("user");
 
   if (storedUser) {
     const user = JSON.parse(storedUser);
@@ -61,7 +61,7 @@ const logout = async () => {
     console.log("Error:", error);
   } finally {
     // Always clear local user
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
     router.push("/");
   }
 };
