@@ -4,6 +4,8 @@ import MessageInput from "./MessageInput.vue";
 
 const props = defineProps({
   room: Object,
+  socket: Object,
+  username: String,
 });
 
 const messages = ref([]);
@@ -17,7 +19,7 @@ onMounted(() => {
 watch(
   () => props.room,
   async (newRoom) => {
-    if (!newRoom || !newRoom.id) return; // ✅ prevent fetch if room is not ready
+    if (!newRoom || !newRoom.id) return;
     try {
       const res = await fetch(
         `http://localhost:9000/api/messages/${newRoom.id}`
@@ -42,24 +44,30 @@ function formatTime(timestamp) {
 
 <template>
   <div class="container">
-    <div
-      class="message-wrapper"
-      v-for="msg in messages"
-      :key="msg.id"
-      :class="{ self: msg.username === storedUser.username }"
-    >
-      <div class="sender" v-if="msg.username !== storedUser?.username">
-        {{ msg.username }}
-      </div>
-
-      <div class="message-container">
-        <div class="message-box">
-          <span class="text">{{ msg.message }}</span>
+    <div>
+      <div
+        class="message-wrapper"
+        v-for="msg in messages"
+        :key="msg.id"
+        :class="{ self: msg.username === storedUser.username }"
+      >
+        <div class="sender" v-if="msg.username !== storedUser?.username">
+          {{ msg.username }}
         </div>
-        <span class="time">{{ formatTime(msg.created_at) }}</span>
+
+        <div class="message-container">
+          <div class="message-box">
+            <span class="text">{{ msg.message }}</span>
+          </div>
+          <span class="time">{{ formatTime(msg.created_at) }}</span>
+        </div>
       </div>
     </div>
-    <MessageInput />
+    <MessageInput
+      :room="props.room"
+      :socket="props.socket"
+      :username="props.username"
+    />
   </div>
 </template>
 
@@ -72,6 +80,7 @@ function formatTime(timestamp) {
   background-color: #2c2c3a;
   overflow-y: auto;
   height: 100%;
+  justify-content: space-between;
 }
 
 .message-wrapper {

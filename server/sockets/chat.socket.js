@@ -14,6 +14,15 @@ export function chatSocket(io, socket) {
     console.log(`Socket ${socket.id} joined room ${room_id}`);
   });
 
+  socket.on("typing", ({ room_id, username }) => {
+    io.to(`room:${room_id}`).emit("userTyping", username);
+    console.log(`${username} is typing in room ${room_id}`);
+  });
+
+  socket.on("stopTyping", ({ room_id, username }) => {
+    io.to(`room:${room_id}`).emit("userStoppedTyping", username);
+  });
+
   // Chat socket for sending messages
   socket.on("sendMessage", async ({ user_id, room_id, message }) => {
     const saved = await saveMessage({ user_id, room_id, message });
