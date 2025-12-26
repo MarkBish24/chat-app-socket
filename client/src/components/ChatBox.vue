@@ -22,6 +22,8 @@ watch(
       messages.value = data.messages;
       console.log(messages.value);
 
+      props.socket.off("newMessage", handleNewMessage);
+
       props.socket.on("newMessage", handleNewMessage);
     } catch (err) {
       console.error("Error fetching messages:", err);
@@ -40,11 +42,6 @@ function formatTime(timestamp) {
 function handleNewMessage(newMessage) {
   messages.value.push(newMessage);
 }
-
-onMounted(() => {
-  if (!props.socket) return;
-  props.socket.off("newMessage", handleNewMessage);
-});
 </script>
 
 <template>
@@ -52,11 +49,14 @@ onMounted(() => {
     <div>
       <div
         class="message-wrapper"
-        v-for="msg in messages"
+        v-for="(msg, index) in messages"
         :key="msg.id"
         :class="{ self: msg.username === user.username }"
       >
-        <div class="sender" v-if="msg.username !== user?.username">
+        <div
+          class="sender"
+          v-if="index === 0 || msg.username !== messages[index - 1].username"
+        >
           {{ msg.username }}
         </div>
 
