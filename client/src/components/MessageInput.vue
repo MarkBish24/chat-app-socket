@@ -1,5 +1,5 @@
-<script>
-import { ref, defineProps, onMounted } from "vue";
+<script setup>
+import { ref, defineProps, watch, onUnmounted } from "vue";
 
 const props = defineProps({
   socket: Object,
@@ -8,8 +8,8 @@ const props = defineProps({
 });
 
 const message = ref("");
+const typingUsers = ref([]);
 let typingTimeout = null;
-const typingUsers = ref(new Set());
 
 const handleTyping = () => {
   if (!props.room || !props.socket) return;
@@ -28,29 +28,67 @@ const handleTyping = () => {
   }, 1000);
 };
 
-onMounted(() => {
+// store what the emits do in variables
+let userTypingHandler, userStoppedHandler;
+
+// Watch for socket to become available
+watch(
+  () => props.socket,
+  (newSocket) => {
+    if (!newSocket) return;
+
+    console.log("Socket available, attaching typing listeners");
+
+    userTypingHandler = ({ username }) => {
+      console.log("userTyping received:", username);
+      if (username === props.username) return;
+      if (!typingUsers.value.includes(username))
+        typingUsers.value.push(username);
+    };
+
+    userStoppedHandler = ({ username }) => {
+      console.log("userStoppedTyping received:", username);
+      typingUsers.value = typingUsers.value.filter((u) => u !== username);
+    };
+
+    //create new emits
+    newSocket.on("userTyping", userTypingHandler);
+    newSocket.on("userStoppedTyping", userStoppedHandler);
+  },
+  { immediate: true }
+);
+
+onUnmounted(() => {
   if (!props.socket) return;
-
-  props.socket.on("userTyping", ({ username }) => {
-    typingUsers.value.add(username);
-  });
-
-  props.socket.on("userStoppedTyping", ({ username }) => {
-    typingUsers.value.delete(username);
-  });
+  props.socket.off("userTyping", userTypingHandler);
+  props.socket.off("userStoppedTyping", userStoppedHandler);
 });
+
+const sendMessage = () => {
+  if (!message.value.trim() || !props.socket || !props.room) return;
+
+  props.socket.emit("sendMessage", {
+    room_id: props.room.id,
+    message: message.value,
+    username: props.username,
+  });
+
+  message.value = "";
+
+  props.socket.emit("stopTyping", {
+    room_id: props.room.id,
+    username: props.username,
+  });
+};
 </script>
 
 <template>
   <div>
-    <div v-if="typingUsers && typingUsers.size > 0">
-      <div v-if="typingUsers && typingUsers.size > 0">
-        {{ [...typingUsers].join(", ") }} typing…
-      </div>
+    <div class="typing-indicator" v-if="typingUsers.length > 0">
+      {{ typingUsers.join(", ") }} typing…
     </div>
     <div class="chat-input">
       <textarea
-        ref="textarea"
         v-model="message"
         placeholder="Message #general"
         rows="1"
@@ -84,5 +122,12 @@ onMounted(() => {
 
 .chat-input textarea::placeholder {
   color: #b5bac1;
+}
+
+.typing-indicator {
+  padding: 4px 10px;
+  font-size: 13px;
+  color: #b5bac1;
+  font-style: italic;
 }
 </style>

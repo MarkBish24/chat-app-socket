@@ -15,12 +15,17 @@ export function chatSocket(io, socket) {
   });
 
   socket.on("typing", ({ room_id, username }) => {
-    io.to(`room:${room_id}`).emit("userTyping", username);
+    if (currentRoom !== room_id) return;
+
     console.log(`${username} is typing in room ${room_id}`);
+    socket.to(`room:${room_id}`).emit("userTyping", { username });
   });
 
   socket.on("stopTyping", ({ room_id, username }) => {
-    io.to(`room:${room_id}`).emit("userStoppedTyping", username);
+    if (currentRoom !== room_id) return;
+
+    console.log(`${username} stopped typing in room ${room_id}`);
+    socket.to(`room:${room_id}`).emit("userStoppedTyping", { username });
   });
 
   // Chat socket for sending messages
