@@ -5,16 +5,10 @@ import MessageInput from "./MessageInput.vue";
 const props = defineProps({
   room: Object,
   socket: Object,
-  username: String,
+  user: Object,
 });
 
 const messages = ref([]);
-const storedUser = ref(null);
-
-onMounted(() => {
-  storedUser.value = JSON.parse(sessionStorage.getItem("user"));
-  console.log(storedUser.value);
-});
 
 watch(
   () => props.room,
@@ -49,9 +43,9 @@ function formatTime(timestamp) {
         class="message-wrapper"
         v-for="msg in messages"
         :key="msg.id"
-        :class="{ self: msg.username === storedUser.username }"
+        :class="{ self: msg.username === user.username }"
       >
-        <div class="sender" v-if="msg.username !== storedUser?.username">
+        <div class="sender" v-if="msg.username !== user?.username">
           {{ msg.username }}
         </div>
 
@@ -66,7 +60,7 @@ function formatTime(timestamp) {
     <MessageInput
       :room="props.room"
       :socket="props.socket"
-      :username="props.username"
+      :user="props.user"
     />
   </div>
 </template>

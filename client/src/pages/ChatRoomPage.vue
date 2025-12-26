@@ -8,7 +8,7 @@ import Room from "../components/ROom.vue";
 
 const router = useRouter();
 
-const username = ref("");
+const user = ref(null);
 
 const rooms = ref([]);
 const activeRoom = ref(null);
@@ -18,8 +18,7 @@ onMounted(() => {
   const storedUser = sessionStorage.getItem("user");
 
   if (storedUser) {
-    const user = JSON.parse(storedUser);
-    username.value = user.username;
+    user.value = JSON.parse(storedUser);
   }
 
   socket = io("http://localhost:9000");
@@ -84,7 +83,7 @@ const logout = async () => {
         <h2 v-else>Select a Room</h2>
         <button @click="logout">Logout</button>
       </div>
-      <ChatBox :room="activeRoom" :socket="socket" :username="username" />
+      <ChatBox :room="activeRoom" :socket="socket" :user="user" />
     </div>
   </div>
 </template>

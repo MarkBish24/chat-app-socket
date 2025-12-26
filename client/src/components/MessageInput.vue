@@ -4,7 +4,7 @@ import { ref, defineProps, watch, onUnmounted } from "vue";
 const props = defineProps({
   socket: Object,
   room: Object,
-  username: String,
+  user: Object,
 });
 
 const message = ref("");
@@ -16,14 +16,14 @@ const handleTyping = () => {
 
   props.socket.emit("typing", {
     room_id: props.room.id,
-    username: props.username,
+    username: props.user.username,
   });
 
   clearTimeout(typingTimeout);
   typingTimeout = setTimeout(() => {
     props.socket.emit("stopTyping", {
       room_id: props.room.id,
-      username: props.username,
+      username: props.user.username,
     });
   }, 1000);
 };
@@ -68,9 +68,9 @@ const sendMessage = () => {
   if (!message.value.trim() || !props.socket || !props.room) return;
 
   props.socket.emit("sendMessage", {
+    user_id: props.user.id,
     room_id: props.room.id,
     message: message.value,
-    username: props.username,
   });
 
   message.value = "";
