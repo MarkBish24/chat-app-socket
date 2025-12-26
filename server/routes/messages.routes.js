@@ -1,5 +1,8 @@
 import express from "express";
-import { fetchMessagesByRoom } from "../controllers/messages.controller.js";
+import {
+  fetchMessageById,
+  fetchMessagesByRoom,
+} from "../controllers/messages.controller.js";
 
 const router = express.Router();
 
@@ -7,5 +10,7 @@ const router = express.Router();
 // router.post("/", createMessage);
 
 router.get("/:room_id", fetchMessagesByRoom);
+
+router.get("/message/:message_id", fetchMessageById);
 
 export default router;

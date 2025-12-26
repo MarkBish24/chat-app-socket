@@ -6,7 +6,15 @@ export async function saveMessage({ user_id, room_id, message }) {
       `
       INSERT INTO messages (user_id, room_id, message)
       VALUES ($1, $2, $3)
-      RETURNING id, message, created_at
+      RETURNING
+        id,
+        message,
+        created_at,
+        (
+          SELECT username
+          FROM users
+          WHERE users.id = messages.user_id
+        ) AS username
       `,
       [user_id, room_id, message]
     );
@@ -31,6 +39,23 @@ export async function getMessagesByRoom({ room_id }) {
     );
 
     return messages.rows;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+}
+
+export async function getMessageById({ message_id }) {
+  try {
+    const message = await pool.query(
+      `
+      SELECT m.id, m.message, m.created_at, u.username
+      FROM messages m
+      JOIN users u ON m.user_id = u.id
+      WHERE m.id = $1
+      `,
+      [message_id]
+    );
+    return message.rows[0];
   } catch (err) {
     throw new Error(err.message);
   }

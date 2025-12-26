@@ -12,8 +12,8 @@ const messages = ref([]);
 
 watch(
   () => props.room,
-  async (newRoom) => {
-    if (!newRoom || !newRoom.id) return;
+  async (newRoom, oldRoom) => {
+    if (!newRoom || !props.socket) return;
     try {
       const res = await fetch(
         `http://localhost:9000/api/messages/${newRoom.id}`
@@ -21,6 +21,8 @@ watch(
       const data = await res.json();
       messages.value = data.messages;
       console.log(messages.value);
+
+      props.socket.on("newMessage", handleNewMessage);
     } catch (err) {
       console.error("Error fetching messages:", err);
     }
@@ -34,6 +36,15 @@ function formatTime(timestamp) {
     minute: "2-digit",
   });
 }
+
+function handleNewMessage(newMessage) {
+  messages.value.push(newMessage);
+}
+
+onMounted(() => {
+  if (!props.socket) return;
+  props.socket.off("newMessage", handleNewMessage);
+});
 </script>
 
 <template>
