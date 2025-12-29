@@ -7,6 +7,7 @@ const props = defineProps({
 });
 
 const users = ref([]);
+const onlineUserIds = ref(new Set());
 
 watch(
   () => props.socket,
@@ -16,6 +17,14 @@ watch(
       const res = await fetch(`http://localhost:9000/api/auth/get-all-users`);
       const data = await res.json();
       users.value = data.users;
+
+      // tell server this user is online (once)
+      props.socket.emit("userOnline", { user_id: props.user.id });
+
+      //listen for updates
+      props.socket.on("usersOnline", (ids) => {
+        onlineUserIds.value = new Set(ids);
+      });
 
       console.log(users.value);
     } catch (err) {
@@ -30,7 +39,10 @@ watch(
     <h3 class="title">Users</h3>
     <ul class="users-list">
       <li v-for="user in users" :key="user.id" class="user-item">
-        <span class="status-dot"></span>
+        <span
+          class="status-dot"
+          :class="{ online: onlineUserIds.has(user.id) }"
+        ></span>
         <span class="username">{{ user.username }}</span>
       </li>
     </ul>
@@ -80,8 +92,12 @@ watch(
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #3ba55d; /* online green */
+  background-color: #b23f15; /* online green */
   flex-shrink: 0;
+}
+
+.status-dot.online {
+  background-color: #3ba55d; /* online color */
 }
 
 .username {

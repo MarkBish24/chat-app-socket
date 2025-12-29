@@ -44,5 +44,19 @@ export function chatSocket(io, socket) {
   // Checking Online Status
   const onlineUsers = new Map();
 
-  socket.on("userOnline");
+  socket.on("userOnline", ({ user_id }) => {
+    onlineUsers.set(user_id, socket.id);
+    io.emit("usersOnline", Array.from(onlineUsers.keys()));
+  });
+
+  socket.on("disconnect", () => {
+    for (const [userId, socketId] of onlineUsers.entries()) {
+      if (socketId === socket.id) {
+        onlineUsers.delete(userId);
+        break;
+      }
+    }
+
+    io.emit("usersOnline", Array.from(onlineUsers.keys()));
+  });
 }
