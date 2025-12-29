@@ -49,3 +49,15 @@ export async function logoutUser() {
     throw new Error(err.message);
   }
 }
+
+export async function getAllUsers() {
+  try {
+    const result = await pool.query(`
+      SELECT id, username FROM users
+    `);
+
+    return result.rows;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+}

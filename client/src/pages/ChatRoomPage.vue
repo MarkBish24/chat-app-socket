@@ -4,7 +4,8 @@ import { useRouter } from "vue-router";
 import { io } from "socket.io-client";
 
 import ChatBox from "../components/ChatBox.vue";
-import Room from "../components/ROom.vue";
+import Room from "../components/Room.vue";
+import RoomSideBar from "../components/RoomSideBar.vue";
 
 const router = useRouter();
 
@@ -83,7 +84,10 @@ const logout = async () => {
         <h2 v-else>Select a Room</h2>
         <button @click="logout">Logout</button>
       </div>
-      <ChatBox :room="activeRoom" :socket="socket" :user="user" />
+      <div class="room-container">
+        <RoomSideBar :room="activeRoom" :socket="socket" :user="user" />
+        <ChatBox :room="activeRoom" :socket="socket" :user="user" />
+      </div>
     </div>
   </div>
 </template>
@@ -122,5 +126,9 @@ const logout = async () => {
   gap: 10px;
   width: 120px;
   background-color: #1e1e2f;
+}
+.room-container {
+  display: flex;
+  flex-direction: row;
 }
 </style>

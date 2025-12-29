@@ -3,6 +3,7 @@ import { saveMessage } from "../services/messages.services.js";
 export function chatSocket(io, socket) {
   let currentRoom = null;
 
+  //When user joins a room
   socket.on("joinRoom", ({ room_id }) => {
     if (currentRoom) {
       console.log(`Socket ${socket.id} left room ${currentRoom}`);
@@ -14,6 +15,7 @@ export function chatSocket(io, socket) {
     console.log(`Socket ${socket.id} joined room ${room_id}`);
   });
 
+  //Check Typing
   socket.on("typing", ({ room_id, username }) => {
     if (currentRoom !== room_id) return;
 
@@ -38,4 +40,9 @@ export function chatSocket(io, socket) {
   socket.on("leaveRoom", ({ room_id }) => {
     socket.leave(`room:${room_id}`);
   });
+
+  // Checking Online Status
+  const onlineUsers = new Map();
+
+  socket.on("userOnline");
 }
